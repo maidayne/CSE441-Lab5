@@ -4,15 +4,6 @@ import React, { useEffect, useState,  } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
-// const services = [
-//   { id: '1', name: 'Chăm sóc da mặt và dưỡng ẩm tự nhiên', price: '250.000 ₫' },
-//   { id: '2', name: 'Gội đầu dưỡng sinh trung hoa', price: '150.000 ₫' },
-//   { id: '3', name: 'Lột mụn', price: '40.000 ₫' },
-//   { id: '4', name: 'Gội đầu dưỡng sinh trọn gói tất cả dịch vụ', price: '400.000 ₫' },
-//   { id: '5', name: 'Dịch vụ rửa mặt', price: '100.000 ₫' },
-//   { id: '6', name: 'Dịch vụ đánh răng', price: '50.000 ₫' },
-// ];
-
 const ServiceListScreen = ({ navigation }) => {
 
   const [services, setServices] = useState([]);
@@ -44,7 +35,6 @@ const ServiceListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Danh sách dịch vụ</Text>
       <FlatList
         data={services}
         keyExtractor={(item) => item.id}

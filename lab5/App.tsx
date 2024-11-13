@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// Import screens
 import Login from './src/Login';
 import ServiceListScreen from './src/ServiceListScreen';
 import AddServiceScreen from './src/AddServiceScreen';
@@ -14,6 +13,11 @@ import Setting from './src/Setting';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+// Define User interface
+interface User {
+  token?: string;
+}
 
 const TabNavigator = () => (
   <Tab.Navigator>
@@ -26,14 +30,13 @@ const TabNavigator = () => (
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState<User>({});
 
   // Handler function for login
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
   };
 
-  // console.log(user);
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -55,7 +58,12 @@ const App = () => {
             />
 
             {/* Other screens */}
-            <Stack.Screen name="AddService" initialParams={{ user }} component={AddServiceScreen} options={{ title: 'Add Service' }} />
+            <Stack.Screen
+              name="AddService"
+              component={AddServiceScreen}
+              initialParams={{ loginToken: user?.token }}
+              options={{ title: 'Add Service' }}
+            />
             <Stack.Screen name="ServiceDetail" component={ServiceDetailScreen} options={{ title: 'Service Detail' }} />
           </>
         )}

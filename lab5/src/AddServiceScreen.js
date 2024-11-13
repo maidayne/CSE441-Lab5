@@ -1,76 +1,113 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; 
 import axios from 'axios';
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
 const AddServiceScreen = ({ route }) => {
-    const { v4: uuidv4 } = require('uuid');
-    const [serviceName, setServiceName] = useState('');
-    const [price, setPrice] = useState('');
-    const { user } = route.params;
+  const navigation = useNavigation();
+  const { loginToken } = route.params; 
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.label}>Service name *</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Input a service name"
-                value={serviceName}
-                onChangeText={setServiceName}
-            />
-            <Text style={styles.label}>Price *</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="0"
-                keyboardType="numeric"
-                value={price}
-                onChangeText={setPrice}
-            />
-            <Button title="Add" color="#ff4081" onPress={() => {
-                const generateUUID = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                    const r = (Math.random() * 16) | 0;
-                    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-                    return v.toString(16);
-                  });
-                  ;
-                const response = axios.put(
-                    "https://kami-backend-5rs0.onrender.com/services/id",
-                    {
-                        'id': generateUUID(),
-                        'name': serviceName,
-                        'price': price,
-                        'login token': user.token,
-                    }
-                )
-                response.then(res => {
-                    console.log(res.data);
-                    console.log('Thêm dịch vụ thành công!');
-                    navigation.goBack();
-                }).catch(error => {
-                    console.log('Thêm dịch vụ thất bại!');
-                    console.error("add service",error);
-                });
-            }} />
-        </View>
-    );
+  useEffect(() => {
+    // Add listener when the screen comes into focus
+    const unsubscribe = navigation.addListener('focus', () => {
+
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleAddService = async () => {
+    if (!name || !price) {
+      Alert.alert('Error', 'Please enter both the service name and price.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        'https://kami-backend-5rs0.onrender.com/services',
+        { name, price: parseInt(price) },
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        Alert.alert('Success', 'Service added successfully!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.navigate('Home');
+            },
+          },
+        ]);
+      } else {
+        Alert.alert('Error', 'Failed to add service.');
+      }
+    } catch (error) {
+      console.log('Error:', error.response ? error.response.data : error.message);
+      Alert.alert('Error', 'Could not add service. Please try again.');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Service Name"
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Price"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="numeric"
+      />
+      <TouchableOpacity style={styles.button} onPress={handleAddService}>
+        <Text style={styles.buttonText}>Add Service</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
-    label: {
-        fontSize: 16,
-        marginBottom: 8,
-    },
-    input: {
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 8,
-        marginBottom: 16,
-    },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginBottom: 32,
+  },
+  input: {
+    width: '100%',
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  button: {
+    width: '100%',
+    padding: 15,
+    backgroundColor: '#ff6b6b',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
 
 export default AddServiceScreen;
