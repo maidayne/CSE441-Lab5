@@ -28,6 +28,7 @@ const Login = ({ onLoginSuccess, setUser }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
+
       <TextInput
         style={styles.input}
         placeholder="Phone"
@@ -35,6 +36,7 @@ const Login = ({ onLoginSuccess, setUser }) => {
         onChangeText={setPhone}
         keyboardType="phone-pad"
       />
+
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -42,6 +44,7 @@ const Login = ({ onLoginSuccess, setUser }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
+      
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>

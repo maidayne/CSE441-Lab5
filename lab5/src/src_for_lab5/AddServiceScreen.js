@@ -61,6 +61,7 @@ const AddServiceScreen = ({ route }) => {
         value={name}
         onChangeText={setName}
       />
+
       <TextInput
         style={styles.input}
         placeholder="Price"
@@ -68,6 +69,7 @@ const AddServiceScreen = ({ route }) => {
         onChangeText={setPrice}
         keyboardType="numeric"
       />
+      
       <TouchableOpacity style={styles.button} onPress={handleAddService}>
         <Text style={styles.buttonText}>Add Service</Text>
       </TouchableOpacity>

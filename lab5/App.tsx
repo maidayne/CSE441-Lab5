@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Login from './src/Login';
-import ServiceListScreen from './src/ServiceListScreen';
-import AddServiceScreen from './src/AddServiceScreen';
-import ServiceDetailScreen from './src/ServiceDetailScreen';
-import Transaction from './src/Transaction';
-import Customer from './src/Customer';
-import Setting from './src/Setting';
+import Login from './src/src_for_lab5/Login';
+
+import ServiceListScreen from './src/src_for_lab5/ServiceListScreen';
+import AddServiceScreen from './src/src_for_lab5/AddServiceScreen';
+import ServiceDetailScreen from './src/src_for_lab5/ServiceDetailScreen';
+
+import Transaction from './src/src_for_lab6/TransactionListScreen';
+import Setting from './src/src_for_lab6/Setting';
+
+import CustomerListScreen from './src/src_for_lab6/CustomerListScreen';
+import AddCustomerScreen from './src/src_for_lab6/AddCustomerScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -19,12 +24,26 @@ interface User {
   token?: string;
 }
 
-const TabNavigator = () => (
+// Define Props for TabNavigator
+interface TabNavigatorProps {
+  setUser: (user: User) => void;
+  setIsLoggedIn: (isLoggedIn: boolean) => void;
+}
+
+const TabNavigator: React.FC<TabNavigatorProps> = ({ setUser, setIsLoggedIn }) => (
   <Tab.Navigator>
-    <Tab.Screen name="Home" component={ServiceListScreen} options={{ title: 'Danh sách dịch vụ' }} />
+    <Tab.Screen
+      name="Home"
+      component={ServiceListScreen}
+      options={{ title: 'Danh sách dịch vụ' }}
+    />
     <Tab.Screen name="Transaction" component={Transaction} />
-    <Tab.Screen name="Customer" component={Customer} />
-    <Tab.Screen name="Setting" component={Setting} />
+    <Tab.Screen name="Customer" component={CustomerListScreen} />
+    <Tab.Screen
+      name="Setting"
+      component={Setting}
+      initialParams={{ setUser, setIsLoggedIn }}
+    />
   </Tab.Navigator>
 );
 
@@ -53,9 +72,16 @@ const App = () => {
             {/* Main Tab Navigator */}
             <Stack.Screen
               name="Main"
-              component={TabNavigator}
               options={{ headerShown: false }}
-            />
+            >
+              {(props) => (
+                <TabNavigator
+                  {...props}
+                  setUser={setUser}
+                  setIsLoggedIn={setIsLoggedIn}
+                />
+              )}
+            </Stack.Screen>
 
             {/* Other screens */}
             <Stack.Screen
@@ -65,6 +91,13 @@ const App = () => {
               options={{ title: 'Add Service' }}
             />
             <Stack.Screen name="ServiceDetail" component={ServiceDetailScreen} options={{ title: 'Service Detail' }} />
+
+            <Stack.Screen
+              name="AddCustomer"
+              component={AddCustomerScreen}
+              initialParams={{ loginToken: user?.token }}
+              options={{ title: 'Add Customer' }}
+            />
           </>
         )}
       </Stack.Navigator>

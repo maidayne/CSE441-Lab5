@@ -105,6 +105,7 @@ const ServiceDetailScreen = ({ route, navigation }) => {
                     <Ionicons name="ios-more" size={24} color="gray" />
                 </TouchableOpacity>
             </View>
+            
             <Text style={styles.label}>Price: {serviceGet.price}</Text>
             <Text style={styles.label}>Creator Name: {serviceGet.user?.name}</Text>
             <Text style={styles.label}>Created At: {new Date(serviceGet.createdAt).toLocaleString()}</Text>

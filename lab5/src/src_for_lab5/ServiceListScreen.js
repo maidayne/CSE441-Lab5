@@ -1,8 +1,11 @@
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faMugSaucer } from '@fortawesome/free-solid-svg-icons/faMugSaucer'
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
-import React, { useEffect, useState,  } from 'react';
+import React, { useEffect, useState, } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { IconButton } from 'react-native-paper';
+
 
 const ServiceListScreen = ({ navigation }) => {
 
@@ -38,6 +41,7 @@ const ServiceListScreen = ({ navigation }) => {
       <FlatList
         data={services}
         keyExtractor={(item) => item.id}
+
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.serviceItem} onPress={() => navigation.navigate('ServiceDetail', { service: item })}>
             <Text style={styles.serviceName}>{item.name}</Text>
@@ -51,6 +55,7 @@ const ServiceListScreen = ({ navigation }) => {
         style={styles.addButton}
         onPress={() => navigation.navigate('AddService')}
       />
+
     </View>
   );
 };
@@ -85,6 +90,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     right: 20,
     backgroundColor: '#ff4081',
+    borderRadius: 50,
   },
 });
 
