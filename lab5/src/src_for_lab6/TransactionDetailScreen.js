@@ -1,92 +1,170 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native-paper';
 
-export default function TransactionDetail({ route }) {
-  const { transactionId } = route.params;
-  const [transaction, setTransaction] = useState(null);
+export default function TransactionDetailScreen({ route, navigation }) {
+  const { transaction } = route.params;
+  const [transactionGet, setTransactionGet] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const getTransaction = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`https://kami-backend-5rs0.onrender.com/transactions/${transaction._id}`);
+      setTransactionGet(response.data);
+    } catch (error) {
+      setError("Error fetching transaction details. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    axios
-      .get('https://kami-backend-5rs0.onrender.com/transactions/${transactionId}')
-      .then((response) => setTransaction(response.data))
-      .catch((error) => console.error(error));
-  }, [transactionId]);
+    if (transaction && transaction._id) {
+      getTransaction();
+    } else {
+      setError("Invalid transaction ID.");
+      setLoading(false);
+    }
+  }, [transaction]);
 
-  if (!transaction) {
+  useFocusEffect(
+    useCallback(() => {
+      if (transaction && transaction._id) {
+        getTransaction();
+      }
+    }, [transaction])
+  );
+
+  if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#ff6b6b" />
       </View>
     );
   }
 
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  // Calculate total amounts
+  const totalAmount = transaction.services.reduce((sum, service) => {
+    return sum + service.price * service.quantity;
+  }, 0);
+  const totalAmountWithDiscount = (totalAmount * 10) / 100;
+  const finalTotalAmount = totalAmount - totalAmountWithDiscount;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Transaction Detail</Text>
-      <Text style={styles.text}>Transaction Code: {transaction._id}</Text>
-      <Text style={styles.text}>Customer: {transaction.customerName}</Text>
-      <Text style={styles.text}>Created At: {transaction.createdAt}</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.totalContainer}>
+        <Text style={styles.text}>Transaction Code: {transaction._id}</Text>
+        <Text style={styles.text}>Customer: {transaction.customer.name}</Text>
+        <Text style={styles.text}>Created At: {transaction.createdAt}</Text>
+      </View>
 
-      <Text style={styles.sectionTitle}>Services:</Text>
-      {transaction.services.map((service, index) => (
-        <Text key={index} style={styles.serviceItem}>
-          {service.name} x{service.quantity} - {service.price} đ
-        </Text>
-      ))}
+      <View style={styles.totalContainer}>
+        <Text style={styles.sectionTitle}>Services List:</Text>
 
-      <Text style={styles.total}>Total: {transaction.total} đ</Text>
-      <Text style={styles.discount}>Discount: {transaction.discount} đ</Text>
-      <Text style={styles.finalTotal}>Total Payment: {transaction.finalTotal} đ</Text>
-    </View>
+        {transaction.services.map((service, index) => (
+          <View key={index} style={styles.serviceItem}>
+            <Text style={styles.serviceText}>
+              {service.name} x{service.quantity} - {service.price} VND
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.totalContainer}>
+        <Text style={styles.total}>Total: {totalAmount.toFixed(0)} VND</Text>
+        <Text style={styles.discount}>Discount: {totalAmountWithDiscount.toFixed(0)} VND</Text>
+        <Text style={styles.finalTotal}>Total Payment: {finalTotalAmount.toFixed(0)} VND</Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
-    padding: 15,
+    backgroundColor: '#f9f9f9',
+    padding: 20,
+    paddingBottom: 30,
   },
   header: {
-    fontSize: 20,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 15,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#555',
-    marginTop: 20,
-    marginBottom: 10,
+    fontWeight: '500',
+    color: '#EF506C',
+    marginTop: 5,
+    marginBottom: 15,
   },
   text: {
     fontSize: 14,
-    color: '#333',
-    marginBottom: 5,
+    color: '#555',
+    marginBottom: 10,
   },
   serviceItem: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 12,
+    marginVertical: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  serviceText: {
     fontSize: 14,
-    color: '#666',
-    marginVertical: 3,
+    color: '#555',
+  },
+  totalContainer: {
+    marginTop: 20,
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
   },
   total: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-    marginTop: 15,
+    fontSize: 14,
+    fontWeight: '300',
+    color: '#000000',
+    marginBottom: 8,
   },
   discount: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#ff3b30',
-    marginTop: 5,
+    fontWeight: '250',
+    color: '#1EA11D',
+    marginBottom: 8,
   },
   finalTotal: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '400',
     color: '#007aff',
-    marginTop: 10,
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#ff3b30',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });

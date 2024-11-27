@@ -34,20 +34,21 @@ export default function TransactionListScreen({ navigation }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation.navigate('TransactionDetail', { transactionId: item._id })}
+      onPress={() => navigation.navigate('TransactionDetail', { transaction: item })}
     >
-      <Text style={styles.code}>Transaction Code: {item._id}</Text>
+      <Text style={styles.code}>Code: {item._id}</Text>
+      <Text >Customer: {item.customer ? item.customer.name : 'N/A'}</Text>
       <Text>Created At: {item.createdAt}</Text>
       {Array.isArray(item.services) && item.services.length > 0 ? (
         item.services.map((service) => (
-          <Text key={service.id} style={styles.amount}>
+          <Text key={service.id} style={styles.service}>
             Services: {service.name}
           </Text>
         ))
       ) : (
-        <Text style={styles.amount}>No services available</Text>
+        <Text style={styles.service}>No services available</Text>
       )}
-      <Text style={styles.amount}>Total: {item.price} đ</Text>
+    <Text style={styles.amount}>Total: {item.price} đ</Text>
       <Text style={styles.status}>{item.status === 'Cancelled' ? 'Cancelled' : 'Completed'}</Text>
     </TouchableOpacity>
   );
@@ -82,19 +83,24 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   code: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 5,
   },
+  service: {
+    color: '#000000',
+    fontWeight: '200',
+    fontSize: 14,
+  },
   amount: {
-    color: '#007aff',
+    color: '#000000',
     fontWeight: 'bold',
     fontSize: 14,
   },
   status: {
     marginTop: 5,
-    color: '#ff3b30',
+    color: '#269143',
     fontWeight: '600',
   },
 });

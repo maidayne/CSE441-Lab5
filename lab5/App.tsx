@@ -4,13 +4,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+import { TouchableOpacity, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
+
+
 import Login from './src/src_for_lab5/Login';
 
 import ServiceListScreen from './src/src_for_lab5/ServiceListScreen';
 import AddServiceScreen from './src/src_for_lab5/AddServiceScreen';
 import ServiceDetailScreen from './src/src_for_lab5/ServiceDetailScreen';
 
-import Transaction from './src/src_for_lab6/TransactionListScreen';
+import TransactionListScreen from './src/src_for_lab6/TransactionListScreen';
+import TransactionDetailScreen from './src/src_for_lab6/TransactionDetailScreen';
+
 import Setting from './src/src_for_lab6/Setting';
 
 import CustomerListScreen from './src/src_for_lab6/CustomerListScreen';
@@ -37,8 +43,25 @@ const TabNavigator: React.FC<TabNavigatorProps> = ({ setUser, setIsLoggedIn }) =
       component={ServiceListScreen}
       options={{ title: 'Danh sách dịch vụ' }}
     />
-    <Tab.Screen name="Transaction" component={Transaction} />
-    <Tab.Screen name="Customer" component={CustomerListScreen} />
+    <Tab.Screen name="Transaction" component={TransactionListScreen} />
+    {/* <Tab.Screen name="Customer" component={CustomerListScreen} /> */}
+
+    <Stack.Screen
+      name="Customer"
+      component={CustomerListScreen}
+      options={{
+        title: 'Customer',
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => Alert.alert('Menu', '3-dot menu clicked')}
+            style={{ marginRight: 15 }}
+          >
+            <Icon name="bar" size={24} color="black" />
+          </TouchableOpacity>
+        ),
+      }}
+    />
+
     <Tab.Screen
       name="Setting"
       component={Setting}
@@ -51,7 +74,6 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User>({});
 
-  // Handler function for login
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
   };
@@ -98,6 +120,9 @@ const App = () => {
               initialParams={{ loginToken: user?.token }}
               options={{ title: 'Add Customer' }}
             />
+
+            <Stack.Screen name="TransactionDetail" component={TransactionDetailScreen} options={{ title: 'Transaction Detail' }} />
+
           </>
         )}
       </Stack.Navigator>

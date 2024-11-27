@@ -4,8 +4,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 const Setting = ({ route, navigation }) => {
     const { setUser, setIsLoggedIn } = route.params;
     const handleLogout = () => {
-        setUser({}); // Xóa dữ liệu user
-        setIsLoggedIn(false); // Đặt trạng thái đăng nhập về false
+        setUser({}); 
+        setIsLoggedIn(false); 
         Alert.alert("You have been logged out.");
     };
 

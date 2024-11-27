@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useEffect, useState, } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 
+
 const CustomerListScreen = ({ navigation }) => {
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);

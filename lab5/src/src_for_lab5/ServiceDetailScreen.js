@@ -79,7 +79,6 @@ const ServiceDetailScreen = ({ route, navigation }) => {
         );
     };
 
-    // Loading state
     if (loading) {
         return (
             <View style={styles.container}>
@@ -88,7 +87,6 @@ const ServiceDetailScreen = ({ route, navigation }) => {
         );
     }
 
-    // Error state
     if (error) {
         return (
             <View style={styles.container}>
